@@ -1,0 +1,29 @@
+name: GHCR Stats
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  ghcr-stats:
+    strategy:
+        matrix:
+          include:
+            - owner: hugomods
+              repo: docker
+              name: hugo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actionstore/ghcr-stats@v1
+        with:
+          owner: ${{ matrix.owner }}
+          repo: ${{ matrix.repo }}
+          name: ${{ matrix.name }}
+          path: ${{ matrix.owner }}/${{ matrix.repo }}/${{ matrix.name }}.json
+      
+      - uses: EndBug/add-and-commit@v9
+        with:
+          message: 'chore: update GHCR stats [skip ci]'
